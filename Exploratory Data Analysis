@@ -1,0 +1,84 @@
+# World Life Expectancy Project (Exploratory Data Analysis) 
+
+SELECT *
+FROM world_life_expectancy
+;
+
+
+SELECT Country,
+ MIN(`Life expectancy`),
+ Max(`Life expectancy`),
+ ROUND(Max(`Life expectancy`) - MIN(`Life expectancy`),1) AS life_increase_15_years
+FROM world_life_expectancy
+GROUP BY Country 
+HAVING MIN(`Life expectancy`) <> 0
+AND Max(`Life expectancy`) <> 0
+ORDER BY life_increase_15_years ASC
+;
+
+
+            
+SELECT Year, ROUND(AVG(`Life expectancy`),2) AS AVG_Life
+FROM world_life_expectancy  
+WHERE `Life expectancy` <> 0
+AND `Life expectancy` <> 0
+GROUP BY Year
+ORDER BY Year
+;
+
+SELECT Country, ROUND(AVG(`Life expectancy`),1) AS Life_Exp, ROUND(AVG(GDP),1) AS GDP
+FROM world_life_expectancy
+GROUP BY Country 
+HAVING GDP > 0 AND Life_Exp > 0
+ORDER BY GDP DESC
+;
+
+
+
+SELECT 
+SUM(CASE WHEN GDP >= 1500 THEN 1 ELSE 0 END) AS High_GDP_Count,
+ROUND(AVG(CASE WHEN GDP >=1500 THEN `Life Expectancy` ELSE NULL END),3) HIGH_GDP_LIFE_EXPECTANCY,
+SUM(CASE WHEN GDP <= 1500 THEN 1 ELSE 0 END) AS LOW_GDP_Count,
+ROUND(AVG(CASE WHEN GDP <=1500 THEN `Life Expectancy` ELSE NULL END),4) LOW_GDP_LIFE_EXPECTANCY
+FROM world_life_expectancy
+;
+
+
+
+SELECT Status, ROUND(AVG(`Life expectancy`),1)
+FROM world_life_expectancy
+GROUP BY Status
+;
+
+
+
+SELECT 
+		Status, 
+		COUNT(DISTINCT Country), 
+		ROUND(AVG(`Life expectancy`),1)
+FROM world_life_expectancy
+GROUP BY Status
+;
+
+
+SELECT 
+		Country, 
+		ROUND(AVG(`Life expectancy`),2) AS Life_Exp,
+        ROUND(AVG(BMI),1) AS BMI
+FROM world_life_expectancy
+GROUP BY Country
+HAVING Life_Exp > 0
+	ANd BMI > 0
+ORDER BY BMI DESC
+;
+
+
+
+
+SELECT Country,
+		Year,
+        `Life expectancy`,
+        `Adult Mortality`,
+SUM(`Adult Mortality`) OVER(PARTITION BY Country ORDER BY Year) AS Rolling_Total
+FROM world_life_expectancy
+;
